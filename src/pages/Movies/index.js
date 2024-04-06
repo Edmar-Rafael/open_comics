@@ -1,23 +1,22 @@
 import React,{ useState, useEffect } from 'react';
 import { Header, ShowContent } from '../../components';
 import { Container } from './styles'
-import { getMovies} from '../../services/movies'
 import { useLocation } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { requestMovies } from '../../store/ducks/movies';
 
 function Movies() {
-
-  const [movies, setMovies] = useState({})
   const [limit, setLimit] = useState('1')
   const [size] = useState('9')
-  let location = useLocation()
+  const {data: moviesData} = useSelector((moviesState) => moviesState)
+
+  const dispatch = useDispatch()
+
+  const location = useLocation()
  
   useEffect(()=>{
-     async function fetchMovies(){
-       const response = await getMovies(size)
-       setMovies(response.data)    
-     }
-     fetchMovies()
-  },[limit, size])
+    dispatch(requestMovies(limit))
+  },[dispatch, limit, size])
 
   function handleClick(){
     setLimit('1')
@@ -26,7 +25,7 @@ function Movies() {
   return (
     <Container>
       <Header handleClick={handleClick}/>
-      <ShowContent items={movies} location={location.pathname}/>
+      <ShowContent items={moviesData} location={location.pathname}/>
     </Container>
   );
 }

@@ -1,23 +1,22 @@
 import React,{ useState, useEffect } from 'react';
 import { Header, HorizonScroll, Latest, ShowContent} from '../../components';
 import { Container } from './styles'
-import {getLastsComics} from '../../services/lastsComics'
 import { useLocation } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { requestLastsComics } from '../../store/ducks/lastsComics';
 
 function Home() {
-
-  const [comics, setComics] = useState({})
   const [seeAll, setSeeAll] = useState(false)
-  let location = useLocation().pathname
   const [limit] = useState('30')
+  const {data: comicsData} = useSelector((lastsComicsState) => lastsComicsState)
+
+  const dispatch = useDispatch()
+
+  const location = useLocation().pathname
  
   useEffect(()=>{
-     async function fetchComics(){
-       const response = await getLastsComics(limit)
-       setComics(response.data) 
-     }
-     fetchComics()
-  },[limit, seeAll])
+    dispatch(requestLastsComics(limit))
+  },[dispatch, limit, seeAll])
 
   function handleClick(){
     console.warn('You clicked me!')
@@ -30,13 +29,14 @@ function Home() {
   return (
     <Container>
       <Header  hendleClick={handleClick}/>
-      {
-        seeAll ? <ShowContent items={comics} location={location} seeAll={seeAll} setSeeAll={showAll}/>:
+      { seeAll ? (
+        <ShowContent items={comicsData} location={location} seeAll={seeAll} setSeeAll={showAll}/>
+      ) : (
         <>
           <HorizonScroll/>
           <Latest setSeeAll={showAll}/>
         </>
-      }
+      )}
     </Container>
   );
 }

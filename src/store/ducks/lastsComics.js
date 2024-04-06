@@ -48,7 +48,7 @@ export function requestLastsComics(limit) {
 const initialState = {
   loading: true,
   error: false,
-  data: {}
+  data: []
 }
 
 export default function lastsComicsState(state = initialState, action) {
